@@ -3,6 +3,12 @@ const {app}=require('./app');
 const dotenv=require('dotenv');
 const mongoose = require('mongoose');
 
+process.on('uncaughtException',err=>{
+  console.log("UNGAUGHT EXCEPTION! Stutting down....");
+  server.close(()=>{
+    process.exit(1);
+  })
+});
 dotenv.config({path:'./config.env'});
 
 const DB=process.env.DATABASE.replace(
@@ -15,12 +21,11 @@ mongoose.connect(DB,{
 
   useNewUrlParser:true,
   useCreateIndex:true,
-  useFindAndModify:false
+  useFindAndModify:false,
+  useUnifiedTopology: true
 
 })
   .then(con=>{
-
-    console.log(con.connections);
 
     console.log('DB connection established');
 
@@ -28,7 +33,18 @@ mongoose.connect(DB,{
 
 const port=process.env.PORT||3000;
 
-app.listen(port,()=>{
+const server=app.listen(port,()=>{
   console.log((`Welcome from the ${port} port`));
 });
+
+process.on('unhandledRejection',(err)=>{
+  console.log(err.name,err.message);
+  server.close(()=>{
+    console.log("UNHANDLED REJECTION! Shutting down the server....");
+    process.exit(1);
+  })
+});
+
+
+
 

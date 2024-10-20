@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "start": "nodemon server.js",
+    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js"
+
   },
   "repository": {
     "type": "git",
