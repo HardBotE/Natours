@@ -1,6 +1,7 @@
 const express = require('express');
 const { deleteTour, getAllTours, getTour, updateTour,topFiveTours } = require('../Controllers/tourController.js') ;
 const { getStats, createTour, getMonthlyPlan } = require('../Controllers/tourController');
+const { loggedIn } = require('../Controllers/authController');
 
 
 const toursRouter=express.Router();
@@ -19,7 +20,7 @@ toursRouter.route('/monthly-plan/:year')
 
 toursRouter
   .route('/')
-  .get(getAllTours)
+  .get(loggedIn,getAllTours)
   .post(createTour);
 
 toursRouter

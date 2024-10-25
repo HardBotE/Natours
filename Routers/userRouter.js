@@ -1,9 +1,17 @@
 const express = require('express');
 const {getAllUsers,updateUser,getUser,modifyUser,deleteUser}=require('../Controllers/userController');
+const { signUpUser, loginUser, loggedIn } = require('../Controllers/authController');
 const userRouter=express.Router();
 
 
 
+userRouter
+  .route('/signup')
+  .post(signUpUser);
+
+userRouter
+  .route('/login')
+  .post(loginUser);
 
 userRouter
   .route('/')

@@ -70,7 +70,7 @@ schema.virtual('durationInWeeks').get(function(){
 
 schema.pre('save',function(){
   console.log(this);
-})
+});
 
 const Tour=mongoose.model('Tour',schema);
 
