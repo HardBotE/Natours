@@ -8,7 +8,6 @@
     "debug": "ndb server.js",
     "start": "nodemon server.js",
     "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js"
-
   },
   "repository": {
     "type": "git",
@@ -16,6 +15,7 @@
   },
   "private": true,
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
@@ -26,8 +26,10 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.1",
     "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^5.13.22",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "validator": "^13.12.0"
   },
   "devDependencies": {
     "ndb": "^1.1.5"
