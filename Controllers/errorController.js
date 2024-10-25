@@ -1,5 +1,6 @@
 const AppError = require('../Utils/appError');
 
+
 function checkEnvVariable() {
   const envValue = process.env.NODE_ENV || ''; // Biztonságos kezelés, ha nincs beállítva.
   if (envValue.endsWith(' ')) { // Ellenőrzi, hogy szóközzel végződik-e.
@@ -53,8 +54,13 @@ const errorProd=(err,res)=>{
 };
 
 
+function handleJWTError(error) {
+  return new AppError('Invalid token',401);
+}
 
-
+function handleJWTExpired(error){
+  return new AppError('Token expired. Enter credentials once again!',401);
+}
 module.exports=(err, req, res, next)=>{
 
   err.statusCode=err.statusCode || 500;
@@ -68,7 +74,8 @@ module.exports=(err, req, res, next)=>{
     if(err.name==='CastError') error=handleCastError(error);
     if(err.code===11000) error=handleDuplicateKey(error);
     if(err.name==='TypeError') error=handleTypeError(error);
-
+    if(err.name==='JsonWebTokenError') error=handleJWTError(error);
+    if(err.name==='TokenExpiredError') error=handleJWTExpired(error);
     errorProd(error,res);
   }
 };
