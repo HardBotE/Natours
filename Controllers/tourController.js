@@ -7,93 +7,19 @@ const { APIFeatures } = require('../Utils/APIFeatures');
 const e = require('express');
 const catchAsync=require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
+const log = require('eslint-plugin-react/lib/util/log');
+const { deleteOne, createOne, updateOne, getOne, getAll } = require('./handlerFactory');
 
+const getAllTours = getAll(Tour);
 
-// Get all tours
-const getAllTours = catchAsync(async (req, res,next) => {
-    //Waiting for query
-    const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limiting()
-      .paginate();
+const getTour = getOne(Tour);
 
-    const tours = await features.query;
+const createTour =createOne(Tour);
 
-    res.status(200).json({
-      status: 'success',
-      items: tours.length,
-      data: {
-        tours
-      }
-    });
-});
+const updateTour = updateOne(Tour);
 
-// Get a specific tour by ID
+const deleteTour = deleteOne(Tour);
 
-const getTour = catchAsync(async (req, res,next) => {
-
-    const tour = await Tour.findById(req.params.id);
-
-    if(!tour)
-    {
-      return next(new AppError('No tour found with that ID',404));
-    }
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour
-      }
-    });
-});
-
-
-
-createTour =catchAsync( async (req, res,next) => {
-  console.log(req.body);
-
-    const newTour = await Tour.create(req.body);
-
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour
-      }
-    });
-  }
-);
-
-// Create a new tour
-const updateTour = catchAsync(async (req, res,next) => {
-
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-
-    if(!tour)
-    {
-      return next(new AppError('No tour found with that ID',404));
-    }
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour
-      }
-    });
-
-});
-
-
-// Delete a tour
-const deleteTour = catchAsync(async (req, res,next) => {
-
-    const tour =await Tour.findByIdAndDelete(req.params.id);
-    if(!tour) {
-      return next(new AppError('No tour found with that ID'),404);
-    }
-    res.status(200).json({
-      status: 'successfully deleted'
-    });
-
-});
 const topFiveTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
