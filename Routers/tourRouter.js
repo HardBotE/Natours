@@ -1,11 +1,18 @@
 const express = require('express');
 const { deleteTour, getAllTours, getTour, updateTour,topFiveTours } = require('../Controllers/tourController.js') ;
 const { getStats, createTour, getMonthlyPlan } = require('../Controllers/tourController');
-const { loggedIn } = require('../Controllers/authController');
+const { loggedIn,authz } = require('../Controllers/authController');
+const { getAllReviews, createReview } = require('../Controllers/reviewController');
+
+const reviewRouter=require('./../Routers/reviewRouter');
 
 
 const toursRouter=express.Router();
 console.log(toursRouter.param);
+
+
+toursRouter.use('/:id?/review',reviewRouter);
+
 
 toursRouter
   .route('/top-5-tours')
@@ -20,13 +27,14 @@ toursRouter.route('/monthly-plan/:year')
 
 toursRouter
   .route('/')
-  .get(loggedIn,getAllTours)
-  .post(createTour);
+  .get(getAllTours)
+  .post(loggedIn,authz('admin','lead-guide'),createTour);
 
 toursRouter
   .route('/:id')
   .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+  .patch(loggedIn,authz(['admin','tour-guide-lead']),updateTour)
+  .delete(loggedIn,authz(['admin','tour-guide-lead']),deleteTour);
+
 
 module.exports=toursRouter;
