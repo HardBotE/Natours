@@ -1,6 +1,5 @@
 const mongoose=require('mongoose');
 
-
 //Tour Schema
 const schema=new mongoose.Schema({
   name:{
@@ -20,7 +19,7 @@ const schema=new mongoose.Schema({
     required:[true,'A tour must have a difficulty'],
     enum:{
       values:['easy','medium','difficult'],
-      message:['Difficulty is either: easy, medium, or difficult']
+      message:'Difficulty is either: easy, medium, or difficult'
     }
   },
   ratingsAverage:{
@@ -56,22 +55,72 @@ const schema=new mongoose.Schema({
   },
   startDates:{
     type:[Date]
+  },
+  startLocation:{
+    //GeoJSON
+    type:{
+      type:String,
+      default:'Point',
+      enum:['Point']
+    },
+    //longitude-latitude(vertical-horizontal)
+    coordinates:[Number],
+    address:String,
+    description:String
+  },
+  locations:[
+    {
+      type:{
+        type:String,
+        default:'Point',
+        enum:['Point'],
+      },
+      coordinates:[Number],
+      address:String,
+      description:String,
+      day:Number
 
-  }
+    }
+  ],
+  guides:[{
+    type:mongoose.Schema.ObjectId,
+    ref:'User'
+  }],
 
 },{
   toJSON:{virtuals:true},
   toObject:{virtuals:true}
 });
-
+schema.virtual('reviews',{
+  ref:'Review',
+  foreignField:'tourRef',
+  localField:'_id'
+});
 schema.virtual('durationInWeeks').get(function(){
   return this.duration/7;
 });
+/*
+schema.pre(/^find/,function(next){
+  this.populate({
+    path:'guides',
+    select:'-__v -passwordChangedAt'
+  });
+  next();
+});*/
 
 schema.pre('save',function(){
   console.log(this);
 });
 
+
+
+/*Beagyazas
+schema.pre('save',async function(next){
+  const guidesPromise=await this.guides.map( async id => await User.findById(id));
+  this.guides=await Promise.all(guidesPromise);
+  next();
+});
+*/
 const Tour=mongoose.model('Tour',schema);
 
 module.exports=Tour;
