@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "ndb server.js",
     "start": "nodemon server.js",
-    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js"
+    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+
   },
   "repository": {
     "type": "git",
@@ -40,6 +42,9 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "ndb": "^1.1.5"
+    "ndb": "^1.1.5",
+
+    "express": "^4.21.0"
+
   }
 }
