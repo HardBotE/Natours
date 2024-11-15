@@ -91,6 +91,9 @@ const schema=new mongoose.Schema({
   toJSON:{virtuals:true},
   toObject:{virtuals:true}
 });
+
+schema.index({price:1,ratingsAverage:-1})
+schema.index({slug:1})
 schema.virtual('reviews',{
   ref:'Review',
   foreignField:'tourRef',

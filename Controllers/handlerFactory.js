@@ -71,7 +71,7 @@ const getAll=(Model)=>catchAsync(async (req,res,next)=>{
     .sort()
     .limiting()
     .paginate();
-
+  /*const doc=await features.query.explain();*/
   const data = await features.query;
 
   res.status(200).json({
