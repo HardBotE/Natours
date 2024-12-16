@@ -1,6 +1,6 @@
 const express = require('express');
 const { deleteTour, getAllTours, getTour, updateTour,topFiveTours } = require('../Controllers/tourController.js') ;
-const { getStats, createTour, getMonthlyPlan } = require('../Controllers/tourController');
+const { getStats, createTour, getMonthlyPlan, getToursWithin, getDistances } = require('../Controllers/tourController');
 const { loggedIn,authz } = require('../Controllers/authController');
 const { getAllReviews, createReview } = require('../Controllers/reviewController');
 
@@ -17,6 +17,14 @@ toursRouter.use('/:id?/review',reviewRouter);
 toursRouter
   .route('/top-5-tours')
   .get(topFiveTours,getAllTours);
+
+toursRouter
+  .route('/tours-within/:distance/center/:latlng/unit/:unit')
+  .get(getToursWithin);
+
+toursRouter.route('/distances/:latlng/unit/:unit')
+  .get(getDistances);
+
 
 toursRouter
   .route('/tour-stats')

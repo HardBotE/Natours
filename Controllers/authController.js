@@ -60,7 +60,8 @@ const loginUser=fn(async (req,res,next)=>{
   if(!email||!password) next(new AppError('Please provide email and password!'),400);
 
   const user=await User.findOne({email}).select('+password').select('+passwordChangedAt');
-
+  console.log(user+'user');
+  console.log(password);
 
   if(!user ||! await user.isPasswordCorrect(password,user.password)){
     return next(new AppError('Invalid email or password',401));

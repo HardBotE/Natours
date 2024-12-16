@@ -99,6 +99,7 @@ schema.virtual('reviews',{
   foreignField:'tourRef',
   localField:'_id'
 });
+schema.index({startLocation:'2dsphere'});
 schema.virtual('durationInWeeks').get(function(){
   return this.duration/7;
 });
