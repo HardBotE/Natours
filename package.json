@@ -7,9 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "ndb server.js",
     "start": "nodemon server.js",
-    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-
+    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -38,13 +36,13 @@
     "mongoose": "^5.13.22",
     "nodemailer": "^6.9.16",
     "prettier": "^3.3.3",
+    "pug": "^3.0.3",
+    "slugify": "^1.6.6",
     "validator": "^13.12.0",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "ndb": "^1.1.5",
-
-    "express": "^4.21.0"
-
+    "express": "^4.21.0",
+    "ndb": "^1.1.5"
   }
 }
