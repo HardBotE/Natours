@@ -19,7 +19,7 @@ app.set('views',path.join(__dirname,'View'));
 
 app.use(express.static(path.join(__dirname,'public')));
 
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 //Max json data limit
 app.use(express.json({limit:'10kb'}));

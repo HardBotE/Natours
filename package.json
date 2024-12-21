@@ -33,7 +33,7 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
     "mongo-sanitize": "^1.1.0",
-    "mongoose": "^5.13.22",
+    "mongoose": "^5.13.21",
     "nodemailer": "^6.9.16",
     "prettier": "^3.3.3",
     "pug": "^3.0.3",

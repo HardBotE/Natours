@@ -83,7 +83,7 @@ const schema=new mongoose.Schema({
     }
   ],
   guides:[{
-    type:mongoose.Schema.ObjectId,
+    type:mongoose.Schema.Types.ObjectId,
     ref:'User'
   }],
 
@@ -111,6 +111,9 @@ schema.pre(/^find/,function(next){
   });
   next();
 });*/
+
+
+
 
 schema.pre('save',function(){
   console.log(this);
