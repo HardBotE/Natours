@@ -20,7 +20,6 @@ const getOverview=catchAsync(async (req,res)=>{
 
 });
 
-
 const getTour = catchAsync(async (req, res) => {
   const tour = await Tour.findById(req.params.id).populate({
     path: 'reviews',
@@ -49,6 +48,16 @@ const getTour = catchAsync(async (req, res) => {
   });
 });
 
+const loginUserForm=(req,res)=>{
+  res.status(200)
+    .set(
+      'Content-Security-Policy',
+      "connect-src 'self' https://cdnjs.cloudflare.com"
+    )
+    .render('loginUser', {
+      title: `Log into your account`
+    });
+}
 
 
-module.exports={getOverview,getTour}
+module.exports={getOverview,getTour,loginUserForm}

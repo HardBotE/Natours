@@ -27,9 +27,10 @@ const createSendToken=(user,statusCode,res)=>{
   console.log(res.cookie);
 
   res.status(statusCode).json({
-    message:'Successfully changed password',
+    message:'Successfully logged in',
     token,
-    data:{user}
+    data:{user},
+    status:'success'
   });
 
 };
@@ -75,8 +76,9 @@ const loggedIn=fn(async (req,res,next)=>{
   let token;
   if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
     token=req.headers.authorization.split(" ")[1];
+  }else if(req.cookies.jwt){
+    token=req.cookies.jwt;
   }
-
   if(!token) next(new AppError('You are not logged in. Login to get access.',401));
 
 
@@ -92,6 +94,27 @@ const loggedIn=fn(async (req,res,next)=>{
   if(loggedInUser.isPasswordChanged(data.exp)) next(new AppError('The password was changed in the meantime',401));
 
   req.user=loggedInUser;
+  next();
+});
+
+//page render
+const userHasToken=fn(async (req,res,next)=>{
+  //verify token
+  if(req.cookies.jwt){
+
+    const decoded= await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET);
+
+    const loggedInUser= await User.findById(decoded.id).select('+passwordChangedAt');
+    if(!loggedInUser) next(new AppError('The user was deleted'),401);
+
+    if(loggedInUser.isPasswordChanged(decoded.exp)) next(new AppError('The password was changed in the meantime',401));
+
+    res.locals.user=loggedInUser;
+    return next();
+
+    };
   next();
 });
 
@@ -185,4 +208,4 @@ const updatePassword=fn(async (req,res,next)=>{
 
 });
 
-module.exports={signUpUser,loginUser,loggedIn,authz,generateResetToken,resetPassword,updatePassword};
+module.exports={signUpUser,loginUser,loggedIn,authz,generateResetToken,resetPassword,updatePassword,userHasToken};

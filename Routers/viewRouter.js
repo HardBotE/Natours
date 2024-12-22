@@ -1,12 +1,17 @@
 const express = require('express');
+const authController = require('../controllers/authController');
+const { getTour,getOverview,loginUser, loginUserForm } = require('../Controllers/viewController');
+const { userHasToken } = require('../Controllers/authController');
 
-const { getTour,getOverview } = require('../Controllers/viewController');
 const router = express.Router();
 
+router.use(userHasToken)
 
 router.get('/',getOverview);
 
 router.get('/tours/:id',getTour);
+
+router.get('/login',loginUserForm);
 
 
 

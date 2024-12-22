@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "debug": "ndb server.js",
     "start": "nodemon server.js",
-    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js"
+    "start:prod": "SET \"NODE_ENV=production\" && echo %NODE_ENV% && nodemon server.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "repository": {
     "type": "git",
@@ -15,8 +17,12 @@
   },
   "private": true,
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
+    "cookie": "^1.0.2",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
@@ -34,10 +40,14 @@
     "jsonwebtoken": "^9.0.2",
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^5.13.21",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.9.16",
+    "parcel-bundler": "^1.12.3",
+    "parser": "^0.1.4",
     "prettier": "^3.3.3",
     "pug": "^3.0.3",
     "slugify": "^1.6.6",
+    "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0",
     "xss-clean": "^0.1.4"
   },
