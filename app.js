@@ -20,7 +20,7 @@ const cookieParser = require('cookie-parser');
 
 const app = express();
 app.use(cors({
-  origin: 'http://127.0.0.1:3000', // Replace with your frontend URL
+  origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],// Replace with your frontend URL
   methods: 'GET,POST,PUT,DELETE', // Adjust the methods as needed
   allowedHeaders: 'Content-Type, Authorization', // Adjust headers if needed
   credentials: true, // If you're using cookies or authentication
@@ -38,7 +38,6 @@ app.use(express.json({limit:'10kb'}));
 
 app.use(cookieParser());
 
-app.use(helmet());
 app.use(helmet.dnsPrefetchControl());
 app.use(helmet.frameguard());
 app.use(helmet.hidePoweredBy());
@@ -49,17 +48,41 @@ app.use(helmet.originAgentCluster());
 app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.xssFilter());
+const scriptSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://cdnjs.cloudflare.com', // Axios CDN helye
+  'https://cdn.jsdelivr.net', // Axios alternatív helye
+  'https://*.mapbox.com',
+  'https://js.stripe.com',
+  'https://m.stripe.network',
+];
+const styleSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://fonts.googleapis.com/',
+];
+const connectSrcUrls = [
+  'https://unpkg.com',
+  'https://tile.openstreetmap.org',
+  'https://*.cloudflare.com/',
+  'https://*.mapbox.com',
+  'https://bundle.js:*',
+  'ws://localhost:*/',
+];
+const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      'child-src': ['blob:'],
-      'connect-src': ['https://*.mapbox.com', 'https://*.cloudflare.com', 'http://127.0.0.1:3000'],
-      'default-src': ["'self'"],
-      'font-src': ["'self'", 'https://fonts.gstatic.com'],
-      'img-src': ["'self'", 'data:', 'blob:'],
-      'script-src': ["'self'", 'https://*.mapbox.com', 'https://*.cloudflare.com', 'http://127.0.0.1:3000'],
-      'style-src': ["'self'", "'unsafe-inline'", 'https:'],
-      'worker-src': ['blob:'],
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      fontSrc: ["'self'", ...fontSrcUrls],
     },
   })
 );

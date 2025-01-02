@@ -8,6 +8,9 @@ html
             link(rel='stylesheet',href='/css/style.css')
             link(rel='shortcut icon',type='image/png', href='/img/favicon.png')
             link(rel='stylesheet',href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
+            script(src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js")
+
+
     //HEADER
     include _header
     //CONTENT
@@ -15,6 +18,8 @@ html
         h1 Placeholder heading
     //FOOTER
     include _footer
-    script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js' integrity='sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==' crossorigin='anonymous')
-    script(src='/js/mapbox.js')
-    script(src='/js/login.js')
+
+    //-script(src='/js/bundled/index.js' type='module')
+    //-script(src='/js/login.js' type='module')
+    //-script(src='/js/mapbox.js' type='module')
+    script(src='/js/bundled/index.js' type='module')

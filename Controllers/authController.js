@@ -71,50 +71,69 @@ const loginUser=fn(async (req,res,next)=>{
   createSendToken(user,200,res);
 });
 
-const loggedIn=fn(async (req,res,next)=>{
 
-  let token;
-  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-    token=req.headers.authorization.split(" ")[1];
-  }else if(req.cookies.jwt){
-    token=req.cookies.jwt;
+const loggedIn=(async (req,res,next)=>{
+
+  try{
+    let token;
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+      token=req.headers.authorization.split(" ")[1];
+    }else if(req.cookies.jwt){
+      token=req.cookies.jwt;
+    }
+    if(!token) next(new AppError('You are not logged in. Login to get access.',401));
+
+
+    const data=await promisify(jwt.verify)(token,process.env.JWT_SECRET);
+
+
+    const loggedInUser= await User.findById(data.id).select('+passwordChangedAt');
+
+
+    if(!loggedInUser) next(new AppError('The user was deleted'),401);
+
+
+    if(loggedInUser.isPasswordChanged(data.exp)) next(new AppError('The password was changed in the meantime',401));
+
+    req.user=loggedInUser;
+    res.locals.user=loggedInUser;
+    next();
+  }catch (err){
+    return next();
   }
-  if(!token) next(new AppError('You are not logged in. Login to get access.',401));
-
-
-  const data=await promisify(jwt.verify)(token,process.env.JWT_SECRET);
-
-
-  const loggedInUser= await User.findById(data.id).select('+passwordChangedAt');
-
-
-  if(!loggedInUser) next(new AppError('The user was deleted'),401);
-
-
-  if(loggedInUser.isPasswordChanged(data.exp)) next(new AppError('The password was changed in the meantime',401));
-
-  req.user=loggedInUser;
-  next();
 });
 
-//page render
+const logout = fn(async (req,res,next)=>{
+  res.cookie('jwt','loggedout',{
+    expires:new Date  (Date.now()+10*1000),
+    httpOnly:true
+  });
+  res.status(200).json({
+    status:'success'
+  });
+})
+//verify if the user was deleted or the jwt is malformed
 const userHasToken=fn(async (req,res,next)=>{
   //verify token
   if(req.cookies.jwt){
+    try{
+      const decoded= await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET);
 
-    const decoded= await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET);
+      const loggedInUser= await User.findById(decoded.id).select('+passwordChangedAt');
+      if(!loggedInUser) next(new AppError('The user was deleted'),401);
 
-    const loggedInUser= await User.findById(decoded.id).select('+passwordChangedAt');
-    if(!loggedInUser) next(new AppError('The user was deleted'),401);
+      if(loggedInUser.isPasswordChanged(decoded.exp)) next(new AppError('The password was changed in the meantime',401));
 
-    if(loggedInUser.isPasswordChanged(decoded.exp)) next(new AppError('The password was changed in the meantime',401));
+      res.locals.user=loggedInUser;
+      return next();
 
-    res.locals.user=loggedInUser;
-    return next();
-
+    }catch(err){
+      return next();
     };
+
+    }
   next();
 });
 
@@ -208,4 +227,4 @@ const updatePassword=fn(async (req,res,next)=>{
 
 });
 
-module.exports={signUpUser,loginUser,loggedIn,authz,generateResetToken,resetPassword,updatePassword,userHasToken};
+module.exports={signUpUser,loginUser,loggedIn,authz,generateResetToken,resetPassword,updatePassword,userHasToken,logout};

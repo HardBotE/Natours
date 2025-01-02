@@ -5,7 +5,8 @@ export const hideAlert= ()=>{
   if (el) el.parentElement.removeChild(el);
 }
 
-const showAlert=(type,msg)=>{
+export const showAlert=(type,msg)=>{
+  console.log('showAlert called with:', type, msg);
   hideAlert();
 
   const markup=`<div class="alert alert--${type}">${msg}</div>`;

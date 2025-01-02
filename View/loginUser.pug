@@ -1,6 +1,5 @@
 extends base
-block append head
-    script(src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js")
+
 block content
     main.main
         .login-form
@@ -15,4 +14,4 @@ block content
                 .form__group
                     button.btn.btn--green Login
 
-    script(src='/js/alerts.js')
+    script(src='/js/alerts.js' type='module')

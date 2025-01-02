@@ -26,20 +26,29 @@ function handleTypeError(error) {
   return new AppError("The difficulty can only be:easy,medium,difficult, the ratings average is between 1 and 5",400);
 }
 
-const errorDev=(err,res)=>{
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-    errors:err.errors,
-    name:err.name
+const errorDev=(err,req,res)=>{
+  console.log(req);
+  if(req.originalUrl.startsWith('/api'))
+  {
+    res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack,
+      errors:err.errors,
+      name:err.name
+    });
+  }else{
+    res.status(err.statusCode).render('error',{
+      title:'Valami baj van',
+      msg:err.message
+    });
+  }
 
-  });
 }
 
 
-const errorProd=(err,res)=>{
+const errorProd=(err,req,res)=>{
   if(err.isOperational){
     res.status(err.statusCode).json({
     status: err.status,
@@ -67,7 +76,7 @@ module.exports=(err, req, res, next)=>{
   err.status=err.status ||"error";
 
   if(process.env.NODE_ENV === "development"){
-    errorDev(err,res);
+    errorDev(err,req,res);
   }else if(process.env.NODE_ENV === "production") {
     let error = {...err};
 
@@ -76,6 +85,6 @@ module.exports=(err, req, res, next)=>{
     if(err.name==='TypeError') error=handleTypeError(error);
     if(err.name==='JsonWebTokenError') error=handleJWTError(error);
     if(err.name==='TokenExpiredError') error=handleJWTExpired(error);
-    errorProd(error,res);
+    errorProd(error,req,res);
   }
 };

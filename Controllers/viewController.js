@@ -25,6 +25,10 @@ const getTour = catchAsync(async (req, res) => {
     path: 'reviews',
   });
 
+  if(!tour){
+    return next(new AppError('There is no tour with that name.',404));
+  }
+
   const guideIds = tour.guides;
 
   console.log('Guide IDs:', guideIds);
@@ -32,6 +36,7 @@ const getTour = catchAsync(async (req, res) => {
   const tourGuides=await Users.find({
   _id: { $in: guideIds },
 });
+
 
   console.log('Tour:', tour);
   console.log('Guides:', tourGuides);
@@ -48,6 +53,13 @@ const getTour = catchAsync(async (req, res) => {
   });
 });
 
+const getAccountDetails=(req,res)=>{
+  res.status(200).render('account',{
+    title:'Account Details',
+
+  });
+}
+
 const loginUserForm=(req,res)=>{
   res.status(200)
     .set(
@@ -60,4 +72,4 @@ const loginUserForm=(req,res)=>{
 }
 
 
-module.exports={getOverview,getTour,loginUserForm}
+module.exports={getOverview,getTour,loginUserForm,getAccountDetails}
