@@ -3,6 +3,7 @@ import axios from 'axios';
 //vagy 'password' type lesz vagy 'data'
 export const updateSettings=async (data,type)=>{
   console.log(data,type);
+  console.log(data.value);
   try{
     const url= type ==='password'?`http://localhost:3000/api/v1/users/updatePassword`:`http://localhost:3000/api/v1/users/modifyUserData`;
     const res= await axios({

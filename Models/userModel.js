@@ -17,7 +17,6 @@ const userSchema=new mongoose.Schema(
       validate:[validator.isEmail,'Provide a valid email']
     },
     image:{
-      data:Buffer,
       type:String
     },
     role:{

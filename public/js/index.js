@@ -27,26 +27,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
-
   //mapbox ellenorzes
-
   if(mapbox){
     const locations=JSON.parse(mapbox.dataset.locations);
     displayMap(locations);
   }
 
-
-
   if(logOutBtn) logOutBtn.addEventListener('click',logout);
 
   if(userDataForm) userDataForm.addEventListener('submit',e=>{
     e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const name=document.getElementById('name').value;
-
-    updateSettings({name,email},'data');
+    const form= new FormData();
+    form.append('name',document.getElementById('name').value);
+    form.append('email',document.getElementById('email').value);
+    form.append('image',document.getElementById('photo').files[0]);
+    for (let [key, value] of form.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+    updateSettings(form,'data');
   });
 
   if(userPasswordForm) userPasswordForm.addEventListener('submit',e=>{
