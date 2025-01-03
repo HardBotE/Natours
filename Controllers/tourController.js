@@ -1,5 +1,6 @@
 const fs = require('fs');
-
+const multer=require('multer');
+const sharp=require('sharp');
 //const tours= JSON.parse(fs.readFileSync(`{__directory}/../dev-data/data/tours-simple.json`));
 const Tour = require('./../Models/tourModel.js');
 const querystring = require('node:querystring');
@@ -7,7 +8,61 @@ const { APIFeatures } = require('../Utils/APIFeatures');
 const e = require('express');
 const catchAsync=require('../Utils/catchAsync');
 
+const multerStorage=multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if(file.mimetype.startsWith('image/')) {
+    cb(null,true)
+  }else
+    cb(new AppError('Unsupported upload format! Only upload images!',400), false);
+}
+
+const upload=multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+const uploadTourImages=upload.fields([
+  { name:'imageCover',maxCount:1},
+  {name:'images',maxCount: 3 }]);
+
+const resizeTourImages=catchAsync(async (req,res,next)=>{
+
+  if(!req.files.imageCover || !req.files.images) return next();
+
+  //1)Cover image process
+
+  const imageCoverFilename=`tour-${req.params.id}-${Date.now()}.jpeg`;
+
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000,1333)
+    .toFormat('jpeg')
+    .jpeg({quality:90})
+    .toFile(`public/img/tours/${imageCoverFilename}`);
+
+  req.body.imageCover=imageCoverFilename;
+  req.body.images=[];
+
+  //
+  await Promise.all(
+    req.files.images.map(async (file,i)=>{
+    const filename=`tour-${req.params.id}-${Date.now()}-${i+1}.jpeg`;
+
+     await sharp(file.buffer)
+      .resize(2000,1333)
+      .toFormat('jpeg')
+      .jpeg({quality:90})
+      .toFile(`public/img/tours/${filename}`);
+
+    req.body.images.push(filename);
+  }));
+
+  next();
+});
+
 const { deleteOne, createOne, updateOne, getOne, getAll } = require('./handlerFactory');
+
 const AppError = require('../Utils/appError');
 
 const getAllTours = getAll(Tour);
@@ -180,5 +235,7 @@ module.exports = {
   getStats,
   getMonthlyPlan,
   getToursWithin,
-  getDistances
+  getDistances,
+  uploadTourImages,
+  resizeTourImages
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const { deleteTour, getAllTours, getTour, updateTour,topFiveTours } = require('../Controllers/tourController.js') ;
-const { getStats, createTour, getMonthlyPlan, getToursWithin, getDistances } = require('../Controllers/tourController');
+const { getStats, createTour, getMonthlyPlan, getToursWithin, getDistances, uploadTourImages, resizeTourImages } = require('../Controllers/tourController');
 const { loggedIn,authz } = require('../Controllers/authController');
 const { getAllReviews, createReview } = require('../Controllers/reviewController');
 
@@ -41,8 +41,8 @@ toursRouter
 toursRouter
   .route('/:id')
   .get(getTour)
-  .patch(loggedIn,authz(['admin','tour-guide-lead']),updateTour)
-  .delete(loggedIn,authz(['admin','tour-guide-lead']),deleteTour);
+  .patch(loggedIn,authz('admin','tour-guide-lead'),uploadTourImages, resizeTourImages,updateTour)
+  .delete(loggedIn,authz('admin','tour-guide-lead'),deleteTour);
 
 
 module.exports=toursRouter;

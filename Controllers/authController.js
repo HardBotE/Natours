@@ -138,6 +138,7 @@ const userHasToken=fn(async (req,res,next)=>{
 });
 
 const authz=(...roles)=>{
+
   return (req,res,next)=>{
     if(!roles.includes(req.user.role)) throw new AppError('Unauthorized attempt!',401);
     next();
