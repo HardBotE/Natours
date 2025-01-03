@@ -27,7 +27,7 @@ function handleTypeError(error) {
 }
 
 const errorDev=(err,req,res)=>{
-  console.log(req);
+
   if(req.originalUrl.startsWith('/api'))
   {
     res.status(err.statusCode).json({
@@ -41,7 +41,7 @@ const errorDev=(err,req,res)=>{
   }else{
     res.status(err.statusCode).render('error',{
       title:'Valami baj van',
-      msg:err.message
+      msg:err
     });
   }
 

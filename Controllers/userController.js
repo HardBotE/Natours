@@ -47,7 +47,7 @@ const modifyUserData=fn(async(req,res,next)=>{
 
 
    res.status(200).json({
-     message:'success',
+     status:'success',
      data:{
        updatedUser
      }

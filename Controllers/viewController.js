@@ -37,10 +37,6 @@ const getTour = catchAsync(async (req, res) => {
   _id: { $in: guideIds },
 });
 
-
-  console.log('Tour:', tour);
-  console.log('Guides:', tourGuides);
-
   // Rendereljük a 'tourDetail' Pug template-et
   res.status(200)
     .set(
@@ -54,10 +50,12 @@ const getTour = catchAsync(async (req, res) => {
 });
 
 const getAccountDetails=(req,res)=>{
+  console.log(req.user);
   res.status(200).render('account',{
     title:'Account Details',
-
+    user:req.user
   });
+
 }
 
 const loginUserForm=(req,res)=>{
