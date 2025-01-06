@@ -2,7 +2,7 @@ const catchAsync = require('../Utils/catchAsync');
 const Users=require('../Models/userModel');
 const Tour = require('../Models/tourModel');
 const mongoose = require('mongoose');
-
+const Booking=require('../Models/bookingModel');
 var ObjectId = require('mongodb').ObjectId;
 
 const getOverview=catchAsync(async (req,res)=>{
@@ -66,5 +66,19 @@ const loginUserForm=(req,res)=>{
     });
 }
 
+const getMyTours=catchAsync(async (req,res)=>{
 
-module.exports={getOverview,getTour,loginUserForm,getAccountDetails}
+  //get all ids from the userid
+  const bookings=await Booking.find({user:req.user.id});
+
+  const tourIds=bookings.map(el=>el.tour);
+  console.log(tourIds);
+  const tours=await Tour.find({_id:{$in: tourIds}});
+
+  res.status(200).render('overview',{
+    title:'My tours',
+    tours
+  });
+});
+
+module.exports={getMyTours,getOverview,getTour,loginUserForm,getAccountDetails}
