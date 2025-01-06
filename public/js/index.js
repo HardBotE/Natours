@@ -6,6 +6,7 @@ import { logout } from './logout.js';
 import { login } from './login.js';
 import { displayMap } from './mapbox.js';
 import {updateSettings} from './updateSettings.js';
+import bookTour from './stripe.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -15,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const logOutBtn=document.querySelector('.nav__el--logout');
   const userDataForm = document.querySelector('.form-user-data');
   const userPasswordForm = document.querySelector('.form-user-password');
-
+  const bookBtn=document.getElementById('book-tour');
   if(loginForm){
     loginForm.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -59,4 +60,19 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSettings({passwordCurrent,password,passwordConfirm},'password');
   });
 
-})
+  if (bookBtn) {
+    bookBtn.addEventListener('click', async (event) => {
+      event.target.textContent = 'Processing...';
+      const tourId = event.target.dataset.tourId;
+      try {
+        await bookTour(tourId);
+        console.log('Booking completed!');
+      } catch (err) {
+        console.error('Booking failed:', err);
+      }
+    });
+  }
+
+
+
+});

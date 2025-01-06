@@ -39,9 +39,6 @@ const getTour = catchAsync(async (req, res) => {
 
   // Rendereljük a 'tourDetail' Pug template-et
   res.status(200)
-    .set(
-      'Content-Security-Policy',
-      'connect-src https://*.tiles.mapbox.com https://api.mapbox.com https://events.mapbox.com')
     .render('tourDetail', {
     title: `${tour.name} Tour`,
     tour,

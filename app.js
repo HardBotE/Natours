@@ -12,18 +12,20 @@ const cors=require('cors');
 const globalErrorHandler = require('./Controllers/errorController.js');
 
 const reviewRouter = require('./Routers/reviewRouter');
+const bookingRouter=require('./Routers/bookingRouter.js');
 const viewRouter = require('./Routers/viewRouter');
 const toursRouter = require('./Routers/tourRouter.js');
 const userRouter = require('./Routers/userRouter.js');
 
 const cookieParser = require('cookie-parser');
+const { extend } = require('express-csp');
 
 const app = express();
 app.use(cors({
   origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],// Replace with your frontend URL
-  methods: 'GET,POST,PUT,DELETE', // Adjust the methods as needed
-  allowedHeaders: 'Content-Type, Authorization', // Adjust headers if needed
-  credentials: true, // If you're using cookies or authentication
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type, Authorization',
+  credentials: true,
 }));
 
 app.set('view engine','pug');
@@ -48,44 +50,78 @@ app.use(helmet.originAgentCluster());
 app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.xssFilter());
-const scriptSrcUrls = [
-  'https://unpkg.com/',
-  'https://tile.openstreetmap.org',
-  'https://cdnjs.cloudflare.com', // Axios CDN helye
-  'https://cdn.jsdelivr.net', // Axios alternatív helye
-  'https://*.mapbox.com',
-  'https://js.stripe.com',
-  'https://m.stripe.network',
-];
-const styleSrcUrls = [
-  'https://unpkg.com/',
-  'https://tile.openstreetmap.org',
-  'https://fonts.googleapis.com/',
-];
-const connectSrcUrls = [
-  'https://unpkg.com',
-  'https://tile.openstreetmap.org',
-  'https://*.cloudflare.com/',
-  'https://*.mapbox.com',
-  'https://bundle.js:*',
-  'ws://localhost:*/',
-];
-const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+app.use(helmet({ crossOriginEmbedderPolicy: false }));
+app.use(helmet());
 
-app.use(
-  helmet.contentSecurityPolicy({
+extend(app, {
+  policy: {
     directives: {
-      defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'self'", ...scriptSrcUrls],
-      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-      workerSrc: ["'self'", 'blob:'],
-      objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
-      fontSrc: ["'self'", ...fontSrcUrls],
+      'default-src': ['self'],
+      'style-src': ['self', 'unsafe-inline', 'https:'],
+      'font-src': ['self', 'https://fonts.gstatic.com'],
+      'script-src': [
+        'self',
+        'unsafe-inline',
+        'data',
+        'blob',
+        'https://js.stripe.com/v3/',
+        'https://unpkg.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:8828',
+        'ws://localhost:56558/',
+      ],
+      'worker-src': [
+        'self',
+        'unsafe-inline',
+        'data:',
+        'blob:',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
+      ],
+      'frame-src': [
+        'self',
+        'unsafe-inline',
+        'data:',
+        'blob:',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
+      ],
+      'img-src': [
+        'self',
+        'unsafe-inline',
+        'data:',
+        'blob:',
+        'https://*.stripe.com',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:*/',
+      ],
+      'connect-src': [
+        'self',
+        'unsafe-inline',
+        'data:',
+        'blob:',
+        'https://*.stripe.com/*',
+        'https://*.mapbox.com',
+        'https://*.cloudflare.com/',
+        'https://bundle.js:*',
+        'ws://localhost:3000/*',
+        'ws://127.0.0.1:3000/*',
+        'wss://localhost:3000/*',
+        'wss://127.0.0.1:3000/*',
+        'ws://localhost:*',
+      ],
     },
-  })
-);
+  },
+});
 
 
 const limiter=rateLimit({
@@ -127,6 +163,7 @@ app.use('/',viewRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/booking',bookingRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

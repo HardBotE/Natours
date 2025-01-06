@@ -19,7 +19,7 @@ const deleteOne=Model=>catchAsync(async(req,res,next)=> {
 const createOne=Model=>catchAsync( async (req, res,next) => {
   console.log(req.body);
   const doc = await Model.create(req.body);
-
+  doc.id=doc._id.toString();
   res.status(201).json({
     status: 'success',
     data: {

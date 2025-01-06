@@ -4,7 +4,7 @@ const jwt=require('jsonwebtoken');
 const AppError = require('../Utils/appError');
 const { application } = require('express');
 const {promisify}=require('util');
-const {sendMailer}=require('../Utils/email');
+const {sendMailer, Email }=require('../Utils/email');
 const crypto=require('crypto');
 
 const signJWT=(id)=>{
@@ -36,6 +36,8 @@ const createSendToken=(user,statusCode,res)=>{
 };
 
 const signUpUser=fn(async(req,res,next)=>{
+  console.log(req.body);
+
   const newUser=await  User.create({
     name:req.body.name,
     email:req.body.email,
@@ -44,6 +46,10 @@ const signUpUser=fn(async(req,res,next)=>{
     passwordChangedAt:req.body.passwordChangedAt ||null,
     role:req.body.role
   });
+
+  const url=`${req.protocol}://${req.get('host')}/me`;
+  console.log(url);
+  await new Email(newUser,url).sendWelcome();
 
   const token=signJWT(newUser._id);
 
@@ -70,7 +76,6 @@ const loginUser=fn(async (req,res,next)=>{
 
   createSendToken(user,200,res);
 });
-
 
 const loggedIn=(async (req,res,next)=>{
 
@@ -160,14 +165,9 @@ const generateResetToken=fn(async (req,res,next)=>{
   //sending reset token to email
   const resetURL= `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${token}`;
   console.log(resetURL);
-  const message=`Forgot Password? Submit a PATCH request with your new password and
-  passwordConfirm to:${resetURL}\n If you didn't forget the password ignore the email.`
   try{
-    await sendMailer({
-      email:user.email,
-      subject:'Your password reset token is walid for 10min',
-      message
-    });
+    await new Email(user,resetURL).sendPasswordReset();
+
     res.status(200).json({
       status:'success',
       message:'Token sent to email!'
